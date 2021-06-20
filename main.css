@@ -1,0 +1,58 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-family: 'Space Grotesk', sans-serif;
+    color: white;
+}
+
+a{color: white;}
+
+.content{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+h1{
+    text-align: center;
+    margin: 5% 0;
+    color: #ffffff;
+}
+
+#play{
+    position: absolute;
+    bottom: 50px;
+    left: calc(50% - 50px);
+    padding: 10px;
+    background: #000000;
+    color: white;
+    border: 1px solid white;
+    width: 100px;
+    cursor: pointer;
+    border-radius: 5px;
+    opacity: 1;
+    transition: opacity 250ms ease-in-out;
+}
+
+#play:disabled{
+    cursor: default;
+    opacity: 0;
+    visibility: hidden;
+}
+
+#music{
+    text-align: center;
+    position: absolute;
+    bottom: 50px;
+    width: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 250ms ease-in-out 6000ms;
+}
+
+#music.playing{
+    opacity: 1;
+}

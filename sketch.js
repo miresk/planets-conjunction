@@ -11,7 +11,9 @@ const settings = {
   animate: true,
   // Get a WebGL canvas rather than 2D
   context: "webgl",
-  scaleToView: false,
+  // Enable MSAA in WebGL
+  // Turn on MSAA
+  attributes: { antialias: true },
 };
 
 const SCREEN_WIDTH = window.innerWidth;
@@ -28,37 +30,23 @@ const sketch = ({ context }) => {
   // Create a renderer
   const renderer = new THREE.WebGLRenderer({
     canvas: context.canvas,
-    antialias: true,
     alpha: true,
   });
 
   // WebGL background color
   renderer.setClearColor("#121212", 1);
 
-  // Setup a camera
-  //   const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 100);
-  //   camera.position.set(0, 0, -4);
   const camera = new THREE.PerspectiveCamera(60, aspect, 1, 1500);
-//   const camera = new THREE.OrthographicCamera(
-//     SCREEN_WIDTH / -2,
-//     SCREEN_WIDTH / 2,
-//     SCREEN_HEIGHT / 2,
-//     SCREEN_HEIGHT / -2,
-//     1,
-//     1000
-//   );
   camera.position.set(0, 100, 200);
-  //   camera.position.set(0, 0, -4);
-
-//   camera.lookAt(new THREE.Vector3());
+  //   camera.lookAt(new THREE.Vector3());
 
   // Setup camera controller
-//   const controls = new THREE.OrbitControls(camera, context.canvas);
-//   controls.target.set(0, 0, 0);
+  //   const controls = new THREE.OrbitControls(camera, context.canvas);
+  //   controls.target.set(0, 0, 0);
 
   // Setup your scene
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0xf7d9aa, 100,950);
+  scene.fog = new THREE.Fog(0xf7d9aa, 100, 950);
   //   scene.fog = new THREE.FogExp2( colors.yellow, 0.01 );
 
   //   TEXTURES
@@ -102,35 +90,39 @@ const sketch = ({ context }) => {
 
   const jupiterGroup = new THREE.Group();
   const jupiterMesh = new THREE.Mesh(sphereGeometry, jupiterMaterial);
-    createPlanet(scene, jupiterMesh, jupiterGroup, -500, 20, -410, 20);
+  createPlanet(scene, jupiterMesh, jupiterGroup, -400, 20, -300, 20);
 
   const saturnGroup = new THREE.Group();
   const saturnMesh = new THREE.Mesh(sphereGeometry, saturnMaterial);
-    createPlanet(scene, saturnMesh, saturnGroup, -1000, 16, -360, 15);
+  createPlanet(scene, saturnMesh, saturnGroup, -800, 19, -350, 17);
 
   const light = new THREE.PointLight("white", 1.25);
   light.position.set(0, 0, 0);
   scene.add(light);
 
-  //   scene.add(new THREE.PointLightHelper(light, 1));
-  //   scene.add( new THREE.SpotLightHelper( spotLightLeft ));
-  //   scene.add(new THREE.GridHelper(50, 50));
+    // scene.add(new THREE.PointLightHelper(light, 1));
+    // scene.add( new THREE.SpotLightHelper( spotLightLeft ));
+    // scene.add(new THREE.GridHelper(50, 50));
 
   // illuminate the sun
   createSpotlights(scene);
 
-  // Setup a geometry
-    // const geometry = new THREE.SphereGeometry(1, 32, 16);
+  // create an AudioListener and add it to the camera
+  const listener = new THREE.AudioListener();
+  camera.add(listener);
 
-  // Setup a material
-  //   const material = new THREE.MeshBasicMaterial({
-  //     color: "red",
-  //     wireframe: true
-  //   });
+  // create a global audio source
+  const sound = new THREE.Audio(listener);
 
-  // Setup a mesh with geometry + material
-  //   const mesh = new THREE.Mesh(geometry, material);
-  //   scene.add(mesh);
+  // load a sound and set it as the Audio object's buffer
+  const audioLoader = new THREE.AudioLoader();
+  audioLoader.load("assets/Orloe-PassingJupiter.mp3", function (buffer) {
+    sound.setBuffer(buffer);
+    sound.setLoop(false);
+    sound.setVolume(0.5);
+    console.log('dur', buffer.duration.toFixed(2));
+    sound.play();
+  });
 
   // draw each frame
   return {
@@ -143,10 +135,10 @@ const sketch = ({ context }) => {
     },
     // Update & render your scene here
     render({ time }) {
-      sunMesh.rotation.y = time * 0.03
-      particles.rotation.y = time * 0.01
+      sunMesh.rotation.y = time * 0.03;
+      particles.rotation.y = time * 0.01;
 
-      if(time <= 176) {
+      if (time <= 176) {
         jupiterGroup.rotation.y = time * -0.01;
         saturnGroup.rotation.y = time * -0.011;
       }
@@ -154,12 +146,12 @@ const sketch = ({ context }) => {
       jupiterMesh.rotation.y = time * 0.15;
       saturnMesh.rotation.y = time * 0.25;
 
-    //   controls.update();
+      //   controls.update();
       renderer.render(scene, camera);
     },
     // Dispose of events & renderer for cleaner hot-reloading
     unload() {
-    //   controls.dispose();
+      //   controls.dispose();
       renderer.dispose();
     },
   };
